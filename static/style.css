@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+    --background-color: #1a1a1a;
+    --surface-color: #2c2c2c;
+    --primary-color: #7e57c2;
+    --secondary-color: #00bcd4;
+    --on-primary-color: #ffffff;
+    --on-surface-color: #e0e0e0;
+    --on-surface-variant-color: #9e9e9e;
+    --border-color: #3c3c3c;
+    --font-family: 'Roboto', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    color: var(--on-surface-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+.container {
+    width: 100%;
+    max-width: 480px;
+    background-color: var(--surface-color);
+    border-radius: 24px;
+    padding: 3rem;
+    text-align: center;
+}
+
+.header {
+    margin-bottom: 2.5rem;
+}
+
+.header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--on-primary-color);
+}
+
+.header p {
+    color: var(--on-surface-variant-color);
+    font-size: 1.1rem;
+}
+
+.file-info {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.file-info__icon svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.file-info__name {
+    font-size: 1.25rem;
+    font-weight: 500;
+    word-break: break-all;
+    color: var(--on-primary-color);
+}
+
+.file-info__size {
+    font-size: 1rem;
+    color: var(--on-surface-variant-color);
+    margin-top: 0.5rem;
+}
+
+.download-button {
+    display: inline-block;
+    width: 100%;
+    background-color: var(--primary-color);
+    color: var(--on-primary-color);
+    padding: 1.25rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.download-button:hover {
+    background-color: #673ab7;
+}
+
+.footer {
+    margin-top: 2.5rem;
+    font-size: 0.9rem;
+    color: var(--on-surface-variant-color);
+}
+
+.footer a {
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 2rem;
+    }
+
+    .header h1 {
+        font-size: 1.75rem;
+    }
+
+    .file-info__name {
+        font-size: 1.15rem;
+    }
+}

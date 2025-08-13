@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TorDrop - File Download</title>
+</head>
+<body>
+    <header>
+        <h2>Your file is ready!</h2>
+        <p>This is a temporary and secure link.</p>
+    </header>
+
+    <main>
+        <h3>{{ file_name | e }}</h3>
+        <p>{{ file_size }}</p>
+    </main>
+
+    <a href="/download">Download File</a>
+
+    <footer>
+        <p>Powered by <a href="https://github.com/venterum/tordrop" target="_blank">TorDrop</a></p>
+    </footer>
+</body>
+</html>

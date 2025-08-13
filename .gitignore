@@ -1,0 +1,91 @@
+# Project specific
+tor
+tor.exe
+tor_data
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# IDE and Editor Files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Build Artifacts
+build/
+dist/
+bin/
+target/
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Dependency Caching
+node_modules/
+vendor/
+lib/
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+venv/
+.venv/
+env/
+.env/
+
+# Java
+*.jar
+*.war
+*.ear
+*.class
+hs_err_pid*.log
+
+# C#
+[Bb]in/
+[Oo]bj/
+
+# Ruby
+.bundle/
+Gemfile.lock
+
+# Node.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Git
+.gitattributes
+.gitkeep
+
+# Other Common
+.env
+.flaskenv
+*.sqlite3
+*.db
+!*.example
+
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+System Volume Information/
+
+# Environment variables
+.env*
