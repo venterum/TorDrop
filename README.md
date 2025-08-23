@@ -1,58 +1,109 @@
-# TorDrop
+<div align="left">
+  <img src="https://static.venterum.com/img/tordrop-768.png" alt="TorDrop Logo" width="200" height="200" align="left" style="margin-right: 20px;">
+</div>
 
-TorDrop is a cli tool for securely and anonymously sharing files over the Tor network. It creates a unique .onion link to share your file.
+# `TorDrop`
+
+**Securely and anonymously share files over the Tor network**
+
+[![License: GPL v3](https://ziadoua.github.io/m3-Markdown-Badges/badges/LicenceGPLv3/licencegplv31.svg)](#)
+[![Python](https://ziadoua.github.io/m3-Markdown-Badges/badges/Python/python3.svg)](#)
+
+---
+
+## ⚠️ Disclaimer
+
+TorDrop is intended for **educational and personal privacy purposes**.  
+The author is **not responsible** for any misuse or illegal activity caused by using this software.  
+Use responsibly and always comply with your local laws.
+
+---
+
+## What is this?
+
+TorDrop is a CLI tool for securely and anonymously sharing files over the Tor network.  
+It creates a unique `.onion` link to share your file, protecting both your identity and the recipient's.
+
+---
 
 ## Features
 
-*   **Secure & Anonymous:** All traffic is routed through the Tor network, protecting your identity and the recipient's.
-*   **Easy to Use:** Simply point the tool to a file and it will generate a shareable link.
-*   **Temporary Links:** Set a time-to-live (TTL) for your link to make it expire after a certain time.
-*   **One-Time Downloads:** Optionally, the link can be set to expire after the first download.
-*   **QR Code:** Display a QR code of the .onion link for easy sharing to mobile devices.
-*   **Cross-Platform:** Works on Linux, Windows, and macOS.
+- 🔒 **Secure & Anonymous**: All traffic routed through the Tor network  
+- ⏰ **Temporary Links**: Set TTL for link expiration  
+- 📥 **One-Time Downloads**: Link expires after first download  
+- 📱 **QR Code Support**: Easy mobile sharing  
+
+---
 
 ## Requirements
 
-*   Python 3.6+
-*   Tor
+- Python 3.6+  
+- Tor  
+
+---
 
 ## Installation
 
-1.  Clone this repository:
-    ```bash
-    git clone https://github.com/your-username/tordrop.git
-    cd tordrop
-    ```
+```
 
-2.  Install the required Python packages:
-    ```bash
-    pip install -r requirements.txt
-    ```
+WIP
 
-3. Place a tor file from the expert bundle suitable for your OS to the tordrop folder.
+```
+
+---
 
 ## Usage
 
-To share a file, run the `tordrop.py` script with the path to your file:
+### Basic File Sharing
 
-```bash
-python tordrop.py /path/to/your/file.zip
 ```
 
-The script will initialize Tor and provide you with a `.onion` URL.
+python tordrop.py /path/to/your/file.zip
 
-### Options
+```
 
-*   `--ttl <seconds>`: Set a time-to-live for the link in seconds.
-*   `--once`: Allow the file to be downloaded only once.
-*   `--simple`: Serve a simplified HTML template for low-bandwidth connections.
-*   `--port <port>`: Set the local port for the web server (default: 8080).
-*   `--tor-path <path>`: Specify the path to your Tor executable.
-*   `--no-qr`: Do not display a QR code.
-*   `--debug`: Enable debug output.
+### Advanced Options
+
+```
+
+# One-time download
+
+python tordrop.py --once /path/to/your/file.zip
+
+# 1-hour expiration
+
+python tordrop.py --ttl 3600 /path/to/your/file.zip
+
+# Development mode (without Tor)
+
+python tordrop.py run
+
+```
+
+### Command Line Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--ttl <seconds>` | Time-to-live (0 = forever) | `0` |
+| `--once` | One-time download | `False` |
+| `--simple` | Simplified HTML template | `False` |
+| `--port <port>` | Local port | `8080` |
+| `--tor-path <path>` | Tor executable path | `tor` |
+| `--no-qr` | Disable QR code | `False` |
+| `--debug` | Enable debug output | `False` |
+
+---
 
 ## How It Works
 
-TorDrop uses the `stem` library to programmatically control the Tor process. It starts a new Tor process on your machine, creates an ephemeral hidden service, and forwards the hidden service port to a local Flask web server. The Flask server is responsible for serving the file.
+1. Starts a Tor process on your machine  
+2. Creates an ephemeral hidden service  
+3. Forwards the service to a local Flask web server  
+4. Generates a shareable `.onion` link  
+5. Recipients access the file via Tor Browser  
 
-When the script is terminated, the hidden service is destroyed, and the link becomes inaccessible.
+---
+
+## License
+
+This project is licensed under the **GNU GPL v3.0** – see the [LICENSE](LICENSE) file for details.
