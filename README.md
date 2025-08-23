@@ -1,8 +1,7 @@
-<div align="left">
-  <img src="https://static.venterum.com/img/tordrop-768.png" alt="TorDrop Logo" width="200" height="200" align="left" style="margin-right: 20px;">
-</div>
 
-<p style="font-size:3em; font-weight:bold; margin:0;">TorDrop</p>
+<img src="https://static.venterum.com/img/tordrop-768.png" alt="TorDrop Logo" align="left" width="190" height="190" align="left" style="margin-right: 20px;">
+
+### `TorDrop`
 
 **Securely and anonymously share files over the Tor network**
 
