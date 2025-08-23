@@ -2,20 +2,21 @@
   <img src="https://static.venterum.com/img/tordrop-768.png" alt="TorDrop Logo" width="200" height="200" align="left" style="margin-right: 20px;">
 </div>
 
-# `TorDrop`
+<p style="font-size:3em; font-weight:bold; margin:0;">TorDrop</p>
 
 **Securely and anonymously share files over the Tor network**
 
 [![License: GPL v3](https://ziadoua.github.io/m3-Markdown-Badges/badges/LicenceGPLv3/licencegplv31.svg)](#)
-[![Python](https://ziadoua.github.io/m3-Markdown-Badges/badges/Python/python3.svg)](#)
 
 ---
 
-## ⚠️ Disclaimer
+## ⚠️ Very important text below!
 
 TorDrop is intended for **educational and personal privacy purposes**.  
 The author is **not responsible** for any misuse or illegal activity caused by using this software.  
 Use responsibly and always comply with your local laws.
+
+> **Note**: This tool will never include any Tor packages or any functionality for bypassing local Tor network blocks (such as bridges). Users are expected to install and configure Tor separately.
 
 ---
 
