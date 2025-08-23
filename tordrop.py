@@ -5,6 +5,9 @@ import threading
 import stem.util.log
 import qrcode
 import re
+import tempfile
+import shutil
+from time import sleep
 from tqdm import tqdm
 from flask import Flask, send_from_directory, abort, render_template
 from stem.process import launch_tor_with_config
@@ -19,6 +22,8 @@ APP_STATE = {
     "download_count": 0,
     "server_running": True,
     "simple_template": False,
+    "tor_data_dir": None,
+    "tor_service_url": None,
 }
 
 def format_bytes(size):
@@ -32,45 +37,55 @@ def format_bytes(size):
         n += 1
     return f"{size:.2f} {power_labels[n]}B"
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
 
-@app.route('/')
-def index():
-    if not APP_STATE["server_running"]:
-        abort(404)
-    template_name = 'simple_index.html' if APP_STATE["simple_template"] else 'index.html'
-    return render_template(
-        template_name,
-        file_name=APP_STATE.get("file_name", "file"),
-        file_size=APP_STATE.get("file_size", "N/A")
-    )
-
-@app.route('/download')
-def download():
-    if not APP_STATE["server_running"]:
-        abort(404)
-    if APP_STATE["download_once"] and APP_STATE["download_count"] > 0:
-        abort(404, "This link was for a one-time download and has expired.")
-    try:
-        APP_STATE["download_count"] += 1
-        return send_from_directory(
-            APP_STATE["file_dir"],
-            APP_STATE["file_name"],
-            as_attachment=True
+    @app.route('/')
+    def index():
+        if not APP_STATE["server_running"]:
+            abort(404)
+        template_name = (
+            'simple_index.html'
+            if APP_STATE["simple_template"]
+            else 'index.html'
         )
-    except FileNotFoundError:
-        abort(404, "File not found.")
-    finally:
-        if APP_STATE["download_once"]:
-            shutdown_thread = threading.Timer(1, shutdown_server)
-            shutdown_thread.daemon = True
-            shutdown_thread.start()
+        return render_template(
+            template_name,
+            file_name=APP_STATE.get("file_name", "file"),
+            file_size=APP_STATE.get("file_size", "N/A")
+        )
+
+    @app.route('/download')
+    def download():
+        if not APP_STATE["server_running"]:
+            abort(404)
+        if APP_STATE["download_once"] and APP_STATE["download_count"] > 0:
+            abort(404, "This link was for a one-time download and has expired.")
+        try:
+            APP_STATE["download_count"] += 1
+            return send_from_directory(
+                APP_STATE["file_dir"],
+                APP_STATE["file_name"],
+                as_attachment=True
+            )
+        except FileNotFoundError:
+            abort(404, "File not found.")
+        finally:
+            if APP_STATE["download_once"]:
+                shutdown_thread = threading.Timer(1, shutdown_server)
+                shutdown_thread.daemon = True
+                shutdown_thread.start()
+
+    return app
+
+app = create_app()
 
 def run_flask_app(host, port):
-    app.run(host=host, port=port, debug=False)
+    app.run(host=host, port=port, debug=False, threaded=True)
 
 def shutdown_server():
-    print("Download complete. Shutting down server...")
+    print("Download started. Shutting down server in a minute")
+    sleep(60)
     APP_STATE["server_running"] = False
     os._exit(0)
 
@@ -91,14 +106,24 @@ def create_hidden_service(controller, local_port, target_port=80, debug=False):
         return None
 
 @click.command()
-@click.argument('file_path', type=click.Path(exists=True, dir_okay=False, resolve_path=True))
-@click.option('--ttl', type=int, default=0, help='Time-to-live in seconds for the link. 0 means forever.')
-@click.option('--once', is_flag=True, default=False, help='Allow the file to be downloaded only once.')
-@click.option('--simple', is_flag=True, default=False, help='Serve a simplified HTML template for low bandwidth.')
-@click.option('--port', default=8080, help='Local port to run the web server on.')
-@click.option('--tor-path', type=click.Path(exists=True, dir_okay=False), default=None, help='Path to the Tor executable.')
-@click.option('--no-qr', is_flag=True, default=False, help='Do not display a QR code.')
-@click.option('--debug', is_flag=True, default=False, help='Enable debug output.')
+@click.argument(
+    'file_path',
+    type=click.Path(exists=True, dir_okay=False, resolve_path=True)
+)
+@click.option('--ttl', type=int, default=0,
+              help='Time-to-live in seconds for the link. 0 means forever.')
+@click.option('--once', is_flag=True, default=False,
+              help='Allow the file to be downloaded only once.')
+@click.option('--simple', is_flag=True, default=False,
+              help='Serve a simplified HTML template for low bandwidth.')
+@click.option('--port', default=8080,
+              help='Local port to run the web server on.')
+@click.option('--tor-path', type=click.Path(exists=True, dir_okay=False),
+              default=None, help='Path to the Tor executable.')
+@click.option('--no-qr', is_flag=True, default=False,
+              help='Do not display a QR code.')
+@click.option('--debug', is_flag=True, default=False,
+              help='Enable debug output.')
 def main(file_path, ttl, once, simple, port, tor_path, no_qr, debug):
     if debug:
         stem.util.log.log_to_stdout(stem.util.log.DEBUG)
@@ -115,8 +140,27 @@ def main(file_path, ttl, once, simple, port, tor_path, no_qr, debug):
     except OSError:
         APP_STATE["file_size"] = "N/A"
 
-    click.echo(f"File: {APP_STATE['file_name']} ({APP_STATE['file_size']})")
-    click.echo(f"Local server: http://127.0.0.1:{port}")
+    click.echo("")
+    click.echo(
+        click.style(
+            " TorDrop - Secure File Sharing over Tor ",
+            bg="blue", fg="white", bold=True
+        )
+    )
+    click.echo("")
+    click.echo(
+        click.style("File:", fg="cyan", bold=True)
+        + f" {APP_STATE['file_name']}"
+    )
+    click.echo(
+        click.style("Size:", fg="cyan", bold=True)
+        + f" {APP_STATE['file_size']}"
+    )
+    click.echo(
+        click.style("Local:", fg="cyan", bold=True)
+        + f" http://127.0.0.1:{port}"
+    )
+    click.echo("")
 
     flask_thread = threading.Thread(target=run_flask_app, args=("127.0.0.1", port))
     flask_thread.daemon = True
@@ -125,25 +169,29 @@ def main(file_path, ttl, once, simple, port, tor_path, no_qr, debug):
     tor_config = {
         'ControlPort': '9051',
         'CookieAuthentication': '1',
-        'DataDirectory': os.path.join(os.getcwd(), 'tor_data'),
+        'DataDirectory': tempfile.mkdtemp(prefix="tordrop_"),
     }
 
+    APP_STATE["tor_data_dir"] = tor_config['DataDirectory']
     tor_cmd = tor_path if tor_path else 'tor'
 
-    if not os.path.exists(tor_config['DataDirectory']):
-        os.makedirs(tor_config['DataDirectory'])
-
     try:
-        bar_format = "{desc}: {percentage:3.0f}% |{bar}|"
-        with tqdm(total=100, desc="Initializing", bar_format=bar_format) as pbar:
-            pbar.set_description("Bootstrapping Tor")
-
+        bar_format = "{desc} |{bar}| {percentage:3.0f}%"
+        with tqdm(
+            total=100,
+            desc=click.style("Initializing", fg="yellow"),
+            bar_format=bar_format,
+            colour="green"
+        ) as pbar:
             def progress_handler(line):
                 if "Bootstrapped " in line:
                     match = re.search(r'Bootstrapped (\d+)%', line)
                     if match:
                         percentage = int(match.group(1))
-                        pbar.n = int(percentage * 0.9)
+                        pbar.n = int(percentage * 0.7)
+                        pbar.set_description(
+                            click.style("Bootstrapping Tor", fg="yellow")
+                        )
                         pbar.refresh()
                 if debug:
                     tqdm.write(f"Tor: {line.strip()}")
@@ -154,50 +202,102 @@ def main(file_path, ttl, once, simple, port, tor_path, no_qr, debug):
                 take_ownership=True,
                 init_msg_handler=progress_handler
             ):
-                pbar.n = 90
-                pbar.set_description("Authenticating")
+                pbar.n = 70
+                pbar.set_description(
+                    click.style("Authenticating", fg="yellow")
+                )
                 pbar.refresh()
+
                 with Controller.from_port(port=9051) as controller:
                     controller.authenticate()
-                    pbar.n = 95
-                    pbar.set_description("Creating Hidden Service")
+                    pbar.n = 85
+                    pbar.set_description(
+                        click.style("Creating Service", fg="yellow")
+                    )
                     pbar.refresh()
 
                     service_id = create_hidden_service(controller, port, debug=debug)
 
                     pbar.n = 100
-                    pbar.set_description("Setup Complete!")
+                    pbar.set_description(click.style("Ready!", fg="green"))
                     pbar.refresh()
+                    time.sleep(0.5)
 
                     if service_id:
-                        onion_url = f"http://{service_id}.onion"
-                        click.echo(click.echo(click.style(f"Service URL: {onion_url}", fg='green', bold=True)))
-                        click.echo("Share the .onion link with the recipient.")
-                        click.echo("It's recommended to use Tor Browser for downloading files.")
+                        APP_STATE["tor_service_url"] = f"http://{service_id}.onion"
+                        onion_url = APP_STATE["tor_service_url"]
+                        
+                        click.echo("")
+                        click.echo(click.style("✓ Service is ready!", fg="green", bold=True))
+                        click.echo(click.style("Share this link:", fg="cyan", bold=True))
+                        click.echo(click.style(onion_url, fg="green", bold=True))
+                        click.echo("")
+                        click.echo("Tips:")
+                        click.echo(" • Use Tor Browser for downloading files")
+                        click.echo(" • Link is active until you press Ctrl+C")
+                        if once:
+                            click.echo(" • Link will expire after first download")
+                        if ttl > 0:
+                            click.echo(f" • Link will expire in {ttl} seconds")
+                        click.echo("")
 
                         if not no_qr:
+                            click.echo("QR Code:")
                             qr = qrcode.QRCode()
                             qr.add_data(onion_url)
                             qr.make(fit=True)
                             qr.print_ascii(invert=True)
+                            click.echo("")
 
                         click.echo("Press Ctrl+C to shut down the service.")
+                        click.echo("")
 
                         if ttl > 0:
                             click.echo(f"Link will expire in {ttl} seconds.")
                             time.sleep(ttl)
                             click.echo("TTL expired. Shutting down.")
                         else:
-                            while APP_STATE["server_running"]:
-                                time.sleep(1)
+                            try:
+                                while APP_STATE["server_running"]:
+                                    time.sleep(1)
+                            except KeyboardInterrupt:
+                                pass
 
     except Exception as e:
-        click.echo(f"Failed to launch or connect to Tor: {e}")
-        click.echo("Please ensure Tor is installed and accessible.")
+        click.echo("")
+        click.echo(
+            click.style("✗ Error:", fg="red", bold=True)
+            + " Failed to launch or connect to Tor"
+        )
+        click.echo(f"  {e}")
+        click.echo("  Please ensure Tor is installed and accessible.")
+        click.echo("")
 
-    finally:
-        click.echo("\nShutting down the hidden service and server...")
-        os._exit(0)
+    cleanup()
+
+def cleanup():
+    click.echo("")
+    click.echo(click.style("Shutting down...", fg="yellow"))
+
+    if APP_STATE.get("tor_data_dir") and os.path.exists(
+        APP_STATE["tor_data_dir"]
+    ):
+        try:
+            shutil.rmtree(APP_STATE["tor_data_dir"])
+        except Exception:
+            pass
+
+def run_flask_app_dev(host='127.0.0.1', port=8080, debug=False):
+    """Run the Flask app directly without Tor integration for development."""
+    # Set up some default values for development
+    APP_STATE["file_name"] = "sample.txt"
+    APP_STATE["file_size"] = "1.23 MB"
+    APP_STATE["server_running"] = True
+    app.run(host=host, port=port, debug=debug)
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == 'run':
+        run_flask_app_dev()
+    else:
+        main()
