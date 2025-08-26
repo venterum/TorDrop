@@ -5,6 +5,8 @@
 
 **Securely and anonymously share files over the Tor network**
 
+[🇷🇺 На русском языке](README_RU.md)
+
 [![License: GPL v3](https://ziadoua.github.io/m3-Markdown-Badges/badges/LicenceGPLv3/licencegplv31.svg)](#)
 
 ---
@@ -44,10 +46,74 @@ It creates a unique `.onion` link to share your file, protecting both your ident
 
 ## Installation
 
+### Prerequisites
+
+Before installing TorDrop, ensure you have:
+1. Python 3.6+
+2. Tor installed in your system or placed in the project folder
+
+For system-wide Tor installation:
+- **Linux**: `sudo apt install tor` (Debian/Ubuntu) or equivalent for your distribution
+- **Windows**: Download from [Tor Project website](https://www.torproject.org/download/tor/)
+
+You can place the Tor executable directly in the project folder:
+- **Linux**: Name it `tor`
+- **Windows**: Name it `tor.exe`
+
+### Automatic Installation
+
+#### Linux
+
+1. Make the installation script executable:
+   ```bash
+   chmod +x install.sh
+   ```
+
+2. Run the installation script:
+   ```bash
+   ./install.sh
+   ```
+
+3. Follow the prompts to complete installation
+
+#### Windows
+
+1. Run PowerShell as Administrator
+
+2. Execute the installation script:
+   ```powershell
+   .\install.ps1
+   ```
+
+3. Follow the prompts to complete installation
+
+### Manual Installation
+
+If you prefer manual installation:
+
+1. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. Run directly:
+   ```bash
+   python tordrop.py /path/to/your/file.zip
+   ```
+
+### Uninstallation
+
+To uninstall TorDrop:
+
+#### Linux
+```bash
+chmod +x uninstall.sh
+./uninstall.sh
 ```
 
-WIP
-
+#### Windows
+```powershell
+.\uninstall.ps1
 ```
 
 ---
