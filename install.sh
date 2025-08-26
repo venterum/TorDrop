@@ -1,27 +1,27 @@
 #!/bin/bash
 
 # Colors and styles
-C_RESET='\\033[0m'
-C_BLUE='\\033[0;34m'
-C_GREEN='\\033[0;32m'
-C_YELLOW='\\033[0;33m'
-C_RED='\\033[0;31m'
-C_BOLD='\\033[1m'
-C_DIM='\\033[2m'
+C_RESET='\e[0m'
+C_BLUE='\e[0;34m'
+C_GREEN='\e[0;32m'
+C_YELLOW='\e[0;33m'
+C_RED='\e[0;31m'
+C_BOLD='\e[1m'
+C_DIM='\e[2m'
 
 clear
 
 # ASCII Logo
 echo -e "${C_BLUE}${C_BOLD}"
-echo "             (                   " 
-echo "  *   )      )\ )                " 
-echo "` )  /(   ( (()/(  (             " 
-echo " ( )(_)|  )( /(_)) )(   (  `  )  " 
-echo "(_(_()))\(()(_))_ (()\  )\ /(/(  " 
-echo "|_   _((_)((_)   \ ((_)((_|(_)_\ " 
-echo "  | |/ _ \ '_| |) | '_/ _ \ '_ \)" 
-echo "  |_|\___/_| |___/|_| \___/ .__/ " 
-echo "                          |_|    " 
+echo $'             (                   ' 
+echo $'  *   )      )\ )                ' 
+echo $'` )  /(   ( (()/(  (             ' 
+echo $' ( )(_)|  )( /(_)) )(   (  `  )  ' 
+echo $'(_(_()))\(()(_))_ (()\  )\ /(/(  ' 
+echo $'|_   _((_)((_)   \ ((_)((_|(_)_\ ' 
+echo $"  | |/ _ \ '_| |) | '_/ _ \ '_ \)" 
+echo $'  |_|\___/_| |___/|_| \___/ .__/ ' 
+echo $'                          |_|    ' 
 echo -e "${C_RESET}"
 echo -e "${C_GREEN}         TorDrop Installation / Установка TorDrop${C_RESET}"
 echo
