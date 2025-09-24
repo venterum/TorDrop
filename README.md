@@ -101,21 +101,6 @@ If you prefer manual installation:
    python tordrop.py /path/to/your/file.zip
    ```
 
-### Uninstallation
-
-To uninstall TorDrop:
-
-#### Linux
-```bash
-chmod +x uninstall.sh
-./uninstall.sh
-```
-
-#### Windows
-```powershell
-.\uninstall.ps1
-```
-
 ---
 
 ## Usage
