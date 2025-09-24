@@ -100,21 +100,6 @@ TorDrop — консольный инструмент для безопасно�
    python tordrop.py /path/to/your/file.zip
    ```
 
-### Удаление
-
-Чтобы удалить TorDrop:
-
-#### Linux
-```bash
-chmod +x uninstall.sh
-./uninstall.sh
-```
-
-#### Windows
-```powershell
-.\uninstall.ps1
-```
-
 ---
 
 ## Использование
